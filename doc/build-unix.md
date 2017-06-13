@@ -1,6 +1,6 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Auroracoin in Unix. 
+Some notes on how to build Auroracoin in Unix.
 
 To Build
 ---------------------
@@ -17,10 +17,10 @@ Dependencies
  Library     | Purpose          | Description
  ------------|------------------|----------------------
  libssl      | SSL Support      | Secure communications
- libdb4.8    | Berkeley DB      | Wallet storage
+ libdb5.3    | Berkeley DB      | Wallet storage
  libboost    | Boost            | C++ Library
  miniupnpc   | UPnP Support     | Optional firewall-jumping support
- qt          | GUI              | GUI toolkit
+ qt4         | GUI              | GUI toolkit
  protobuf    | Payments in GUI  | Data interchange format used for payment protocol
  libqrencode | QR codes in GUI  | Optional for generating QR codes
 
@@ -52,6 +52,14 @@ Licenses of statically linked libraries:
 -  protobuf      2.5.0
 -  libqrencode   3.2.0
 
+Build Instructions: Gentoo
+--------------------------
+Ebuilds for auroracoin-qt (which also builds auroracoind and the
+cli tool) can be found in the BioMikeOverlay on Github:
+
+https://github.com/BioMike/BioMikeOverlay
+
+
 Dependency Build Instructions: Ubuntu & Debian
 ----------------------------------------------
 Build requirements:
@@ -59,40 +67,7 @@ Build requirements:
 	sudo apt-get install build-essential
 	sudo apt-get install libtool autotools-dev autoconf
 	sudo apt-get install libssl-dev
-
-for Ubuntu 12.04 and later:
-
 	sudo apt-get install libboost-all-dev
-
- db4.8 packages are available [here](https://launchpad.net/~bitcoin/+archive/bitcoin).
- You can add the repository using the following command:
-
-        sudo add-apt-repository ppa:bitcoin/bitcoin
-        sudo apt-get update
-
- Ubuntu 12.04 and later have packages for libdb5.1-dev and libdb5.1++-dev,
- but using these will break binary wallet compatibility, and is not recommended.
-
-for Ubuntu 13.10:
-	libboost1.54 will not work,
-	remove libboost1.54-all-dev and install libboost1.53-all-dev instead.
-
-for Debian 7 (Wheezy) and later:
- The oldstable repository contains db4.8 packages.
- Add the following line to /etc/apt/sources.list,
- replacing [mirror] with any official debian mirror.
-
-	deb http://[mirror]/debian/ oldstable main
-
-To enable the change run
-
-	sudo apt-get update
-
-for other Ubuntu & Debian:
-
-	sudo apt-get install libdb4.8-dev
-	sudo apt-get install libdb4.8++-dev
-	sudo apt-get install libboost1.55-all-dev
 
 Optional:
 
@@ -138,7 +113,7 @@ miniupnpc
 
 Berkeley DB
 -----------
-You need Berkeley DB 4.8.  If you have to build Berkeley DB yourself:
+You need Berkeley DB 5.3.  If you have to build Berkeley DB yourself:
 
 	cd build_unix/
 	../dist/configure --enable-cxx
@@ -210,7 +185,7 @@ disable-wallet mode with:
 
     ./configure --disable-wallet
 
-In this case there is no dependency on Berkeley DB 4.8.
+In this case there is no dependency on Berkeley DB 5.3.
 
 Mining is also possible in disable-wallet mode, but only using the `getblocktemplate` RPC
 call not `getwork`.
