@@ -36,9 +36,6 @@
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <openssl/crypto.h>
 
-using namespace std;
-using namespace boost;
-
 #ifdef ENABLE_WALLET
 std::string strWalletFile;
 CWallet* pwalletMain;
@@ -189,7 +186,7 @@ bool static Bind(const CService &addr, unsigned int flags) {
 // Core-specific options shared between UI, daemon and RPC client
 std::string HelpMessage(HelpMessageMode hmm)
 {
-    string strUsage = _("Options:") + "\n";
+    std::string strUsage = _("Options:") + "\n";
     strUsage += "  -?                     " + _("This help message") + "\n";
     strUsage += "  -alertnotify=<cmd>     " + _("Execute command when a relevant alert is received or we see a really long fork (%s in cmd is replaced by message)") + "\n";
     strUsage += "  -blocknotify=<cmd>     " + _("Execute command when the best block changes (%s in cmd is replaced by block hash)") + "\n";
@@ -353,12 +350,12 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
     }
 
     // hardcoded $DATADIR/bootstrap.dat
-    filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
-    if (filesystem::exists(pathBootstrap)) {
+    boost::filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
+    if (boost::filesystem::exists(pathBootstrap)) {
         FILE *file = fopen(pathBootstrap.string().c_str(), "rb");
         if (file) {
             CImportingNow imp;
-            filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
+            boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LogPrintf("Importing bootstrap.dat...\n");
             LoadExternalBlockFile(file);
             RenameOver(pathBootstrap, pathBootstrapOld);
@@ -519,8 +516,8 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     fDebug = !mapMultiArgs["-debug"].empty();
     // Special-case: if -debug=0/-nodebug is set, turn off debugging messages
-    const vector<string>& categories = mapMultiArgs["-debug"];
-    if (GetBoolArg("-nodebug", false) || find(categories.begin(), categories.end(), string("0")) != categories.end())
+    const std::vector<std::string>& categories = mapMultiArgs["-debug"];
+    if (GetBoolArg("-nodebug", false) || std::find(categories.begin(), categories.end(), std::__cxx11::string("0")) != categories.end())
         fDebug = false;
 
     // Check for -debugnet (deprecated)
@@ -658,7 +655,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             // try again
             if (!bitdb.Open(pathDataDir)) {
                 // if it still fails, it probably means we can't even create the database env
-                string msg = strprintf(_("Error initializing wallet database environment %s!"), strDataDir);
+                std::__cxx11::string msg = strprintf(_("Error initializing wallet database environment %s!"), strDataDir);
                 return InitError(msg);
             }
         }
@@ -670,12 +667,12 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return false;
         }
 
-        if (filesystem::exists(pathDataDir / strWalletFile))
+        if (boost::filesystem::exists(pathDataDir / strWalletFile))
         {
             CDBEnv::VerifyResult r = bitdb.Verify(strWalletFile, CWalletDB::Recover);
             if (r == CDBEnv::RECOVER_OK)
             {
-                string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
+                std::__cxx11::string msg = strprintf(_("Warning: wallet.dat corrupt, data salvaged!"
                                          " Original wallet.dat saved as wallet.{timestamp}.bak in %s; if"
                                          " your balance or transactions are incorrect you should"
                                          " restore from a backup."), strDataDir);
@@ -750,7 +747,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
     if (mapArgs.count("-externalip")) {
-        BOOST_FOREACH(string strAddr, mapMultiArgs["-externalip"]) {
+        BOOST_FOREACH(std::__cxx11::string strAddr, mapMultiArgs["-externalip"]) {
             CService addrLocal(strAddr, GetListenPort(), fNameLookup);
             if (!addrLocal.IsValid())
                 return InitError(strprintf(_("Cannot resolve -externalip address: '%s'"), strAddr));
@@ -758,7 +755,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         }
     }
 
-    BOOST_FOREACH(string strDest, mapMultiArgs["-seednode"])
+    BOOST_FOREACH(std::__cxx11::string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
 
     // ********************************************************* Step 7: load block chain
@@ -766,20 +763,20 @@ bool AppInit2(boost::thread_group& threadGroup)
     fReindex = GetBoolArg("-reindex", false);
 
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
-    filesystem::path blocksDir = pathDataDir / "blocks";
-    if (!filesystem::exists(blocksDir))
+    boost::filesystem::path blocksDir = pathDataDir / "blocks";
+    if (!boost::filesystem::exists(blocksDir))
     {
-        filesystem::create_directories(blocksDir);
+        boost::filesystem::create_directories(blocksDir);
         bool linked = false;
         for (unsigned int i = 1; i < 10000; i++) {
-            filesystem::path source = pathDataDir / strprintf("blk%04u.dat", i);
-            if (!filesystem::exists(source)) break;
-            filesystem::path dest = blocksDir / strprintf("blk%05u.dat", i-1);
+            boost::filesystem::path source = pathDataDir / strprintf("blk%04u.dat", i);
+            if (!boost::filesystem::exists(source)) break;
+            boost::filesystem::path dest = blocksDir / strprintf("blk%05u.dat", i-1);
             try {
-                filesystem::create_hard_link(source, dest);
+                boost::filesystem::create_hard_link(source, dest);
                 LogPrintf("Hardlinked %s -> %s\n", source.string(), dest.string());
                 linked = true;
-            } catch (filesystem::filesystem_error & e) {
+            } catch (boost::filesystem::filesystem_error & e) {
                 // Note: hardlink creation failing is not a disaster, it just means
                 // blocks will get re-downloaded from peers.
                 LogPrintf("Error hardlinking blk%04u.dat : %s\n", i, e.what());
@@ -902,9 +899,9 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (mapArgs.count("-printblock"))
     {
-        string strMatch = mapArgs["-printblock"];
+        std::__cxx11::string strMatch = mapArgs["-printblock"];
         int nFound = 0;
-        for (map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.begin(); mi != mapBlockIndex.end(); ++mi)
+        for (std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.begin(); mi != mapBlockIndex.end(); ++mi)
         {
             uint256 hash = (*mi).first;
             if (strncmp(hash.ToString().c_str(), strMatch.c_str(), strMatch.size()) == 0)
@@ -955,7 +952,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 strErrors << _("Error loading wallet.dat: Wallet corrupted") << "\n";
             else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
             {
-                string msg(_("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
+                std::__cxx11::string msg(_("Warning: error reading wallet.dat! All keys read correctly, but transaction data"
                              " or address book entries might be missing or incorrect."));
                 InitWarning(msg);
             }
@@ -1043,7 +1040,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     std::vector<boost::filesystem::path> vImportFiles;
     if (mapArgs.count("-loadblock"))
     {
-        BOOST_FOREACH(string strFile, mapMultiArgs["-loadblock"])
+        BOOST_FOREACH(std::__cxx11::string strFile, mapMultiArgs["-loadblock"])
             vImportFiles.push_back(strFile);
     }
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));

@@ -14,8 +14,6 @@
 
 #include <boost/assign/list_of.hpp>
 
-using namespace boost::assign;
-
 //
 // Main network
 //
@@ -48,7 +46,7 @@ public:
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
-        txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
+        txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << std::vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
         txNew.vout[0].nValue = 1 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04a5814813115273a109cff99907ba4a05d951873dae7acb6c973d0c9e7c88911a3dbc9aa600deac241b91707e7b4ffb30ad91c8e56e695a1ddf318592988afe0a") << OP_CHECKSIG;
         genesis.vtx.push_back(txNew);
@@ -74,12 +72,12 @@ public:
         vSeeds.push_back(CDNSSeedData("electrum3", "electrum3.auroracoin.is"));
         vSeeds.push_back(CDNSSeedData("electrum4", "electrum4.auroracoin.is"));
 
-        base58Prefixes[PUBKEY_ADDRESS] = list_of(23);
-        base58Prefixes[SCRIPT_ADDRESS] = list_of(5);
-        base58Prefixes[SECRET_KEY]     = list_of(176);
-        base58Prefixes[SECRET_KEY_OLD] = list_of(151);
-        base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x88)(0xB2)(0x1E);
-        base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x88)(0xAD)(0xE4);
+        base58Prefixes[PUBKEY_ADDRESS] = boost::assign::list_of(23);
+        base58Prefixes[SCRIPT_ADDRESS] = boost::assign::list_of(5);
+        base58Prefixes[SECRET_KEY]     = boost::assign::list_of(176);
+        base58Prefixes[SECRET_KEY_OLD] = boost::assign::list_of(151);
+        base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E);
+        base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4);
         // Convert the pnSeeds array into usable address objects.
         for (unsigned int i = 0; i < ARRAYLEN(pnSeed); i++)
         {
@@ -95,12 +93,12 @@ public:
     virtual const CBlock& GenesisBlock() const { return genesis; }
     virtual Network NetworkID() const { return CChainParams::MAIN; }
 
-    virtual const vector<CAddress>& FixedSeeds() const {
+    virtual const std::vector<CAddress>& FixedSeeds() const {
         return vFixedSeeds;
     }
 protected:
     CBlock genesis;
-    vector<CAddress> vFixedSeeds;
+    std::vector<CAddress> vFixedSeeds;
 };
 static CMainParams mainParams;
 

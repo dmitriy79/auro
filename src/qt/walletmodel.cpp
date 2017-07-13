@@ -439,7 +439,7 @@ static void NotifyTransactionChanged(WalletModel *walletmodel, CWallet *wallet, 
 {
     if (fQueueNotifications)
     {
-        vQueueNotifications.push_back(make_pair(hash, status));
+        vQueueNotifications.push_back(std::make_pair(hash, status));
         return;
     }
 

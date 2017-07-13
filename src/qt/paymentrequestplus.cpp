@@ -46,7 +46,7 @@ bool PaymentRequestPlus::parse(const QByteArray& data)
     return true;
 }
 
-bool PaymentRequestPlus::SerializeToString(string* output) const
+bool PaymentRequestPlus::SerializeToString(std::string* output) const
 {
     return paymentRequest.SerializeToString(output);
 }

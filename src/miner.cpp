@@ -57,7 +57,7 @@ class COrphan
 {
 public:
   const CTransaction* ptx;
-  set<uint256> setDependsOn;
+  std::set<uint256> setDependsOn;
   double dPriority;
   double dFeePerKb;
 
@@ -112,7 +112,7 @@ static unsigned int GetMaxBlockSize(unsigned int height)
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, int algo)
 {
   // Create new block
-  auto_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
+  std::auto_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
   if(!pblocktemplate.get())
   return NULL;
   CBlock *pblock = &pblocktemplate->block; // pointer for convenience
@@ -186,14 +186,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, int algo)
     CCoinsViewCache view(*pcoinsTip, true);
 
     // Priority order to process transactions
-    list<COrphan> vOrphan; // list memory doesn't move
-    map<uint256, vector<COrphan*> > mapDependers;
+    std::__cxx11::list<COrphan> vOrphan; // list memory doesn't move
+    std::map<uint256, std::vector<COrphan*> > mapDependers;
     bool fPrintPriority = GetBoolArg("-printpriority", false);
 
     // This vector will be sorted into a priority queue:
-    vector<TxPriority> vecPriority;
+    std::vector<TxPriority> vecPriority;
     vecPriority.reserve(mempool.mapTx.size());
-    for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();mi != mempool.mapTx.end(); ++mi)
+    for (std::map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();mi != mempool.mapTx.end(); ++mi)
     {
       const CTransaction& tx = mi->second.GetTx();
       if (tx.IsCoinBase() || !IsFinalTx(tx, pindexPrev->nHeight + 1))
@@ -578,7 +578,7 @@ void static BitcoinMiner(CWallet *pwallet)
     unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
     CBlockIndex* pindexPrev = chainActive.Tip();
 
-    auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, ALGO_SHA256D));
+    std::auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, ALGO_SHA256D));
     if (!pblocktemplate.get())
     {
       MilliSleep(1000);
@@ -704,7 +704,7 @@ void static BitcoinMiner(CWallet *pwallet)
       unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
       CBlockIndex* pindexPrev = chainActive.Tip();
 
-      auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, ALGO_SCRYPT));
+      std::auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, ALGO_SCRYPT));
       if (!pblocktemplate.get())
       {
         MilliSleep(1000);
@@ -833,7 +833,7 @@ void static BitcoinMiner(CWallet *pwallet)
       unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
       CBlockIndex* pindexPrev = chainActive.Tip();
 
-      auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, algo));
+      std::auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey, algo));
       if (!pblocktemplate.get())
       {
         MilliSleep(1000);
