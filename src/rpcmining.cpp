@@ -18,7 +18,6 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 
-using namespace json_spirit;
 using namespace std;
 
 #ifdef ENABLE_WALLET
@@ -54,7 +53,7 @@ void ShutdownRPCMining()
 // Return average network hashes per second based on the last 'lookup' blocks,
 // or from the last difficulty change if 'lookup' is nonpositive.
 // If 'height' is nonnegative, compute the estimate at the time when a given block was found.
-Value GetNetworkHashPS(int lookup, int height) {
+json_spirit::Value GetNetworkHashPS(int lookup, int height) {
     CBlockIndex *pb = chainActive.Tip();
 
     if (height >= 0 && height < chainActive.Height())
@@ -91,7 +90,7 @@ Value GetNetworkHashPS(int lookup, int height) {
     return (int64_t)(workDiff.getdouble() / timeDiff);
 }
 
-Value getnetworkhashps(const Array& params, bool fHelp)
+json_spirit::Value getnetworkhashps(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 2)
         throw runtime_error(
@@ -113,7 +112,7 @@ Value getnetworkhashps(const Array& params, bool fHelp)
 }
 
 #ifdef ENABLE_WALLET
-Value getgenerate(const Array& params, bool fHelp)
+json_spirit::Value getgenerate(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -135,7 +134,7 @@ Value getgenerate(const Array& params, bool fHelp)
 }
 
 
-Value setgenerate(const Array& params, bool fHelp)
+json_spirit::Value setgenerate(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -176,10 +175,10 @@ Value setgenerate(const Array& params, bool fHelp)
     mapArgs ["-genproclimit"] = itostr(nGenProcLimit);
     GenerateBitcoins(fGenerate, pwalletMain, nGenProcLimit);
 
-    return Value::null;
+    return json_spirit::Value::null;
 }
 
-Value gethashespersec(const Array& params, bool fHelp)
+json_spirit::Value gethashespersec(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -200,7 +199,7 @@ Value gethashespersec(const Array& params, bool fHelp)
 #endif
 
 
-Value getmininginfo(const Array& params, bool fHelp)
+json_spirit::Value getmininginfo(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
@@ -223,32 +222,32 @@ Value getmininginfo(const Array& params, bool fHelp)
             + HelpExampleRpc("getmininginfo", "")
         );
 
-    Object obj;
-    obj.push_back(Pair("blocks",           (int)chainActive.Height()));
-    obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
-    obj.push_back(Pair("currentblocktx",   (uint64_t)nLastBlockTx));
-    obj.push_back(Pair("pow_algo_id",        miningAlgo));
-    obj.push_back(Pair("pow_algo",           GetAlgoName(miningAlgo)));
-    obj.push_back(Pair("difficulty",         (double)GetDifficulty(NULL, miningAlgo)));
-    obj.push_back(Pair("difficulty_sha256d", (double)GetDifficulty(NULL, ALGO_SHA256D)));
-    obj.push_back(Pair("difficulty_scrypt",  (double)GetDifficulty(NULL, ALGO_SCRYPT)));
-    obj.push_back(Pair("difficulty_groestl", (double)GetDifficulty(NULL, ALGO_GROESTL)));
-    obj.push_back(Pair("difficulty_skein",   (double)GetDifficulty(NULL, ALGO_SKEIN)));
-    obj.push_back(Pair("difficulty_qubit",   (double)GetDifficulty(NULL, ALGO_QUBIT)));
-    obj.push_back(Pair("errors",           GetWarnings("statusbar")));
-    obj.push_back(Pair("genproclimit",     (int)GetArg("-genproclimit", -1)));
-//    obj.push_back(Pair("networkhashps",    getnetworkhashps(params, false)));
-    obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
+    json_spirit::Object obj;
+    obj.push_back(json_spirit::Pair("blocks",           (int)chainActive.Height()));
+    obj.push_back(json_spirit::Pair("currentblocksize", (uint64_t)nLastBlockSize));
+    obj.push_back(json_spirit::Pair("currentblocktx",   (uint64_t)nLastBlockTx));
+    obj.push_back(json_spirit::Pair("pow_algo_id",        miningAlgo));
+    obj.push_back(json_spirit::Pair("pow_algo",           GetAlgoName(miningAlgo)));
+    obj.push_back(json_spirit::Pair("difficulty",         (double)GetDifficulty(NULL, miningAlgo)));
+    obj.push_back(json_spirit::Pair("difficulty_sha256d", (double)GetDifficulty(NULL, ALGO_SHA256D)));
+    obj.push_back(json_spirit::Pair("difficulty_scrypt",  (double)GetDifficulty(NULL, ALGO_SCRYPT)));
+    obj.push_back(json_spirit::Pair("difficulty_groestl", (double)GetDifficulty(NULL, ALGO_GROESTL)));
+    obj.push_back(json_spirit::Pair("difficulty_skein",   (double)GetDifficulty(NULL, ALGO_SKEIN)));
+    obj.push_back(json_spirit::Pair("difficulty_qubit",   (double)GetDifficulty(NULL, ALGO_QUBIT)));
+    obj.push_back(json_spirit::Pair("errors",           GetWarnings("statusbar")));
+    obj.push_back(json_spirit::Pair("genproclimit",     (int)GetArg("-genproclimit", -1)));
+//    obj.push_back(json_spirit::Pair("networkhashps",    getnetworkhashps(params, false)));
+    obj.push_back(json_spirit::Pair("pooledtx",         (uint64_t)mempool.size()));
 #ifdef ENABLE_WALLET
-    obj.push_back(Pair("generate",         getgenerate(params, false)));
-    obj.push_back(Pair("hashespersec",     gethashespersec(params, false)));
+    obj.push_back(json_spirit::Pair("generate",         getgenerate(params, false)));
+    obj.push_back(json_spirit::Pair("hashespersec",     gethashespersec(params, false)));
 #endif
     return obj;
 }
 
 
 #ifdef ENABLE_WALLET
-Value getwork(const Array& params, bool fHelp)
+json_spirit::Value getwork(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -338,11 +337,11 @@ Value getwork(const Array& params, bool fHelp)
 
         uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
 
-        Object result;
-        result.push_back(Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
-        result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
-        result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
-        result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
+        json_spirit::Object result;
+        result.push_back(json_spirit::Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
+        result.push_back(json_spirit::Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
+        result.push_back(json_spirit::Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
+        result.push_back(json_spirit::Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
         return result;
     }
     else
@@ -373,7 +372,7 @@ Value getwork(const Array& params, bool fHelp)
 }
 #endif
 
-Value getblocktemplate(const Array& params, bool fHelp)
+json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -438,11 +437,11 @@ Value getblocktemplate(const Array& params, bool fHelp)
     std::string strMode = "template";
     if (params.size() > 0)
     {
-        const Object& oparam = params[0].get_obj();
-        const Value& modeval = find_value(oparam, "mode");
-        if (modeval.type() == str_type)
+        const json_spirit::Object& oparam = params[0].get_obj();
+        const json_spirit::Value& modeval = find_value(oparam, "mode");
+        if (modeval.type() == json_spirit::str_type)
             strMode = modeval.get_str();
-        else if (modeval.type() == null_type)
+        else if (modeval.type() == json_spirit::null_type)
         {
             /* Do nothing */
         }
@@ -495,7 +494,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     UpdateTime(*pblock, pindexPrev);
     pblock->nNonce = 0;
 
-    Array transactions;
+    json_spirit::Array transactions;
     map<uint256, int64_t> setTxIndex;
     int i = 0;
     BOOST_FOREACH (CTransaction& tx, pblock->vtx)
@@ -506,35 +505,35 @@ Value getblocktemplate(const Array& params, bool fHelp)
         if (tx.IsCoinBase())
             continue;
 
-        Object entry;
+        json_spirit::Object entry;
 
         CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
         ssTx << tx;
-        entry.push_back(Pair("data", HexStr(ssTx.begin(), ssTx.end())));
+        entry.push_back(json_spirit::Pair("data", HexStr(ssTx.begin(), ssTx.end())));
 
-        entry.push_back(Pair("hash", txHash.GetHex()));
+        entry.push_back(json_spirit::Pair("hash", txHash.GetHex()));
 
-        Array deps;
+        json_spirit::Array deps;
         BOOST_FOREACH (const CTxIn &in, tx.vin)
         {
             if (setTxIndex.count(in.prevout.hash))
                 deps.push_back(setTxIndex[in.prevout.hash]);
         }
-        entry.push_back(Pair("depends", deps));
+        entry.push_back(json_spirit::Pair("depends", deps));
 
         int index_in_template = i - 1;
-        entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
-        entry.push_back(Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
+        entry.push_back(json_spirit::Pair("fee", pblocktemplate->vTxFees[index_in_template]));
+        entry.push_back(json_spirit::Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
 
         transactions.push_back(entry);
     }
 
-    Object aux;
-    aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
+    json_spirit::Object aux;
+    aux.push_back(json_spirit::Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
 
     uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
 
-    static Array aMutable;
+    static json_spirit::Array aMutable;
     if (aMutable.empty())
     {
         aMutable.push_back("time");
@@ -542,33 +541,33 @@ Value getblocktemplate(const Array& params, bool fHelp)
         aMutable.push_back("prevblock");
     }
 
-    Object result;
-    result.push_back(Pair("version", pblock->nVersion));
-    result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
-    result.push_back(Pair("transactions", transactions));
-    result.push_back(Pair("coinbaseaux", aux));
-    result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
-    result.push_back(Pair("target", hashTarget.GetHex()));
-    result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1));
-    result.push_back(Pair("mutable", aMutable));
-    result.push_back(Pair("noncerange", "00000000ffffffff"));
+    json_spirit::Object result;
+    result.push_back(json_spirit::Pair("version", pblock->nVersion));
+    result.push_back(json_spirit::Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
+    result.push_back(json_spirit::Pair("transactions", transactions));
+    result.push_back(json_spirit::Pair("coinbaseaux", aux));
+    result.push_back(json_spirit::Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
+    result.push_back(json_spirit::Pair("target", hashTarget.GetHex()));
+    result.push_back(json_spirit::Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1));
+    result.push_back(json_spirit::Pair("mutable", aMutable));
+    result.push_back(json_spirit::Pair("noncerange", "00000000ffffffff"));
 
 
     unsigned int maxBlockSize;
 
     GetMaxBlockSizeByBlock(*pblock,maxBlockSize);
 
-    result.push_back(Pair("sigoplimit", (int64_t)maxBlockSize/50));
-    result.push_back(Pair("sizelimit", (int64_t)maxBlockSize));
+    result.push_back(json_spirit::Pair("sigoplimit", (int64_t)maxBlockSize/50));
+    result.push_back(json_spirit::Pair("sizelimit", (int64_t)maxBlockSize));
 
-    result.push_back(Pair("curtime", (int64_t)pblock->nTime));
-    result.push_back(Pair("bits", HexBits(pblock->nBits)));
-    result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
+    result.push_back(json_spirit::Pair("curtime", (int64_t)pblock->nTime));
+    result.push_back(json_spirit::Pair("bits", HexBits(pblock->nBits)));
+    result.push_back(json_spirit::Pair("height", (int64_t)(pindexPrev->nHeight+1)));
 
     return result;
 }
 
-Value submitblock(const Array& params, bool fHelp)
+json_spirit::Value submitblock(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
@@ -604,5 +603,5 @@ Value submitblock(const Array& params, bool fHelp)
     if (!fAccepted)
         return "rejected"; // TODO: report validation state
 
-    return Value::null;
+    return json_spirit::Value::null;
 }

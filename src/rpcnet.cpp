@@ -14,13 +14,10 @@
 #include <boost/foreach.hpp>
 #include "json/json_spirit_value.h"
 
-using namespace json_spirit;
-using namespace std;
-
-Value getconnectioncount(const Array& params, bool fHelp)
+json_spirit::Value getconnectioncount(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
-        throw runtime_error(
+        throw std::runtime_error(
             "getconnectioncount\n"
             "\nReturns the number of connections to other nodes.\n"
             "\nbResult:\n"
@@ -34,10 +31,10 @@ Value getconnectioncount(const Array& params, bool fHelp)
     return (int)vNodes.size();
 }
 
-Value ping(const Array& params, bool fHelp)
+json_spirit::Value ping(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
-        throw runtime_error(
+        throw std::runtime_error(
             "ping\n"
             "\nRequests that a ping be sent to all other nodes, to measure ping time.\n"
             "Results provided in getpeerinfo, pingtime and pingwait fields are decimal seconds.\n"
@@ -53,7 +50,7 @@ Value ping(const Array& params, bool fHelp)
         pNode->fPingQueued = true;
     }
 
-    return Value::null;
+    return json_spirit::Value::null;
 }
 
 static void CopyNodeStats(std::vector<CNodeStats>& vstats)
@@ -69,10 +66,10 @@ static void CopyNodeStats(std::vector<CNodeStats>& vstats)
     }
 }
 
-Value getpeerinfo(const Array& params, bool fHelp)
+json_spirit::Value getpeerinfo(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
-        throw runtime_error(
+        throw std::runtime_error(
             "getpeerinfo\n"
             "\nReturns data about each connected network node as a json array of objects.\n"
             "\nbResult:\n"
@@ -103,38 +100,38 @@ Value getpeerinfo(const Array& params, bool fHelp)
             + HelpExampleRpc("getpeerinfo", "")
         );
 
-    vector<CNodeStats> vstats;
+    std::vector<CNodeStats> vstats;
     CopyNodeStats(vstats);
 
-    Array ret;
+    json_spirit::Array ret;
 
     BOOST_FOREACH(const CNodeStats& stats, vstats) {
-        Object obj;
+        json_spirit::Object obj;
         CNodeStateStats statestats;
         bool fStateStats = GetNodeStateStats(stats.nodeid, statestats);
-        obj.push_back(Pair("addr", stats.addrName));
+        obj.push_back(json_spirit::Pair("addr", stats.addrName));
         if (!(stats.addrLocal.empty()))
-            obj.push_back(Pair("addrlocal", stats.addrLocal));
-        obj.push_back(Pair("services", strprintf("%08x", stats.nServices)));
-        obj.push_back(Pair("lastsend", stats.nLastSend));
-        obj.push_back(Pair("lastrecv", stats.nLastRecv));
-        obj.push_back(Pair("bytessent", stats.nSendBytes));
-        obj.push_back(Pair("bytesrecv", stats.nRecvBytes));
-        obj.push_back(Pair("conntime", stats.nTimeConnected));
-        obj.push_back(Pair("pingtime", stats.dPingTime));
+            obj.push_back(json_spirit::Pair("addrlocal", stats.addrLocal));
+        obj.push_back(json_spirit::Pair("services", strprintf("%08x", stats.nServices)));
+        obj.push_back(json_spirit::Pair("lastsend", stats.nLastSend));
+        obj.push_back(json_spirit::Pair("lastrecv", stats.nLastRecv));
+        obj.push_back(json_spirit::Pair("bytessent", stats.nSendBytes));
+        obj.push_back(json_spirit::Pair("bytesrecv", stats.nRecvBytes));
+        obj.push_back(json_spirit::Pair("conntime", stats.nTimeConnected));
+        obj.push_back(json_spirit::Pair("pingtime", stats.dPingTime));
         if (stats.dPingWait > 0.0)
-            obj.push_back(Pair("pingwait", stats.dPingWait));
-        obj.push_back(Pair("version", stats.nVersion));
+            obj.push_back(json_spirit::Pair("pingwait", stats.dPingWait));
+        obj.push_back(json_spirit::Pair("version", stats.nVersion));
         // Use the sanitized form of subver here, to avoid tricksy remote peers from
         // corrupting or modifiying the JSON output by putting special characters in
         // their ver message.
-        obj.push_back(Pair("subver", stats.cleanSubVer));
-        obj.push_back(Pair("inbound", stats.fInbound));
-        obj.push_back(Pair("startingheight", stats.nStartingHeight));
+        obj.push_back(json_spirit::Pair("subver", stats.cleanSubVer));
+        obj.push_back(json_spirit::Pair("inbound", stats.fInbound));
+        obj.push_back(json_spirit::Pair("startingheight", stats.nStartingHeight));
         if (fStateStats) {
-            obj.push_back(Pair("banscore", statestats.nMisbehavior));
+            obj.push_back(json_spirit::Pair("banscore", statestats.nMisbehavior));
         }
-        obj.push_back(Pair("syncnode", stats.fSyncNode));
+        obj.push_back(json_spirit::Pair("syncnode", stats.fSyncNode));
 
         ret.push_back(obj);
     }
@@ -142,14 +139,14 @@ Value getpeerinfo(const Array& params, bool fHelp)
     return ret;
 }
 
-Value addnode(const Array& params, bool fHelp)
+json_spirit::Value addnode(const json_spirit::Array& params, bool fHelp)
 {
-    string strCommand;
+    std::__cxx11::string strCommand;
     if (params.size() == 2)
         strCommand = params[1].get_str();
     if (fHelp || params.size() != 2 ||
         (strCommand != "onetry" && strCommand != "add" && strCommand != "remove"))
-        throw runtime_error(
+        throw std::runtime_error(
             "addnode \"node\" \"add|remove|onetry\"\n"
             "\nAttempts add or remove a node from the addnode list.\n"
             "Or try a connection to a node once.\n"
@@ -161,17 +158,17 @@ Value addnode(const Array& params, bool fHelp)
             + HelpExampleRpc("addnode", "\"192.168.0.6:12340\", \"onetry\"")
         );
 
-    string strNode = params[0].get_str();
+    std::__cxx11::string strNode = params[0].get_str();
 
     if (strCommand == "onetry")
     {
         CAddress addr;
         ConnectNode(addr, strNode.c_str());
-        return Value::null;
+        return json_spirit::Value::null;
     }
 
     LOCK(cs_vAddedNodes);
-    vector<string>::iterator it = vAddedNodes.begin();
+    std::vector<std::__cxx11::string>::iterator it = vAddedNodes.begin();
     for(; it != vAddedNodes.end(); it++)
         if (strNode == *it)
             break;
@@ -189,13 +186,13 @@ Value addnode(const Array& params, bool fHelp)
         vAddedNodes.erase(it);
     }
 
-    return Value::null;
+    return json_spirit::Value::null;
 }
 
-Value getaddednodeinfo(const Array& params, bool fHelp)
+json_spirit::Value getaddednodeinfo(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
-        throw runtime_error(
+        throw std::runtime_error(
             "getaddednodeinfo dns ( \"node\" )\n"
             "\nReturns information about the given added node, or all added nodes\n"
             "(note that onetry addnodes are not listed here)\n"
@@ -227,18 +224,18 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
 
     bool fDns = params[0].get_bool();
 
-    list<string> laddedNodes(0);
+    std::__cxx11::list<std::__cxx11::string> laddedNodes(0);
     if (params.size() == 1)
     {
         LOCK(cs_vAddedNodes);
-        BOOST_FOREACH(string& strAddNode, vAddedNodes)
+        BOOST_FOREACH(std::__cxx11::string& strAddNode, vAddedNodes)
             laddedNodes.push_back(strAddNode);
     }
     else
     {
-        string strNode = params[1].get_str();
+        std::__cxx11::string strNode = params[1].get_str();
         LOCK(cs_vAddedNodes);
-        BOOST_FOREACH(string& strAddNode, vAddedNodes)
+        BOOST_FOREACH(std::__cxx11::string& strAddNode, vAddedNodes)
             if (strAddNode == strNode)
             {
                 laddedNodes.push_back(strAddNode);
@@ -248,71 +245,71 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
             throw JSONRPCError(RPC_CLIENT_NODE_NOT_ADDED, "Error: Node has not been added.");
     }
 
-    Array ret;
+    json_spirit::Array ret;
     if (!fDns)
     {
-        BOOST_FOREACH(string& strAddNode, laddedNodes)
+        BOOST_FOREACH(std::__cxx11::string& strAddNode, laddedNodes)
         {
-            Object obj;
-            obj.push_back(Pair("addednode", strAddNode));
+            json_spirit::Object obj;
+            obj.push_back(json_spirit::Pair("addednode", strAddNode));
             ret.push_back(obj);
         }
         return ret;
     }
 
-    list<pair<string, vector<CService> > > laddedAddreses(0);
-    BOOST_FOREACH(string& strAddNode, laddedNodes)
+    std::__cxx11::list<std::pair<std::__cxx11::string, std::vector<CService> > > laddedAddreses(0);
+    BOOST_FOREACH(std::__cxx11::string& strAddNode, laddedNodes)
     {
-        vector<CService> vservNode(0);
+        std::vector<CService> vservNode(0);
         if(Lookup(strAddNode.c_str(), vservNode, Params().GetDefaultPort(), fNameLookup, 0))
-            laddedAddreses.push_back(make_pair(strAddNode, vservNode));
+            laddedAddreses.push_back(std::make_pair(strAddNode, vservNode));
         else
         {
-            Object obj;
-            obj.push_back(Pair("addednode", strAddNode));
-            obj.push_back(Pair("connected", false));
-            Array addresses;
-            obj.push_back(Pair("addresses", addresses));
+            json_spirit::Object obj;
+            obj.push_back(json_spirit::Pair("addednode", strAddNode));
+            obj.push_back(json_spirit::Pair("connected", false));
+            json_spirit::Array addresses;
+            obj.push_back(json_spirit::Pair("addresses", addresses));
         }
     }
 
     LOCK(cs_vNodes);
-    for (list<pair<string, vector<CService> > >::iterator it = laddedAddreses.begin(); it != laddedAddreses.end(); it++)
+    for (std::__cxx11::list<std::pair<std::__cxx11::string, std::vector<CService> > >::iterator it = laddedAddreses.begin(); it != laddedAddreses.end(); it++)
     {
-        Object obj;
-        obj.push_back(Pair("addednode", it->first));
+        json_spirit::Object obj;
+        obj.push_back(json_spirit::Pair("addednode", it->first));
 
-        Array addresses;
+        json_spirit::Array addresses;
         bool fConnected = false;
         BOOST_FOREACH(CService& addrNode, it->second)
         {
             bool fFound = false;
-            Object node;
-            node.push_back(Pair("address", addrNode.ToString()));
+            json_spirit::Object node;
+            node.push_back(json_spirit::Pair("address", addrNode.ToString()));
             BOOST_FOREACH(CNode* pnode, vNodes)
                 if (pnode->addr == addrNode)
                 {
                     fFound = true;
                     fConnected = true;
-                    node.push_back(Pair("connected", pnode->fInbound ? "inbound" : "outbound"));
+                    node.push_back(json_spirit::Pair("connected", pnode->fInbound ? "inbound" : "outbound"));
                     break;
                 }
             if (!fFound)
-                node.push_back(Pair("connected", "false"));
+                node.push_back(json_spirit::Pair("connected", "false"));
             addresses.push_back(node);
         }
-        obj.push_back(Pair("connected", fConnected));
-        obj.push_back(Pair("addresses", addresses));
+        obj.push_back(json_spirit::Pair("connected", fConnected));
+        obj.push_back(json_spirit::Pair("addresses", addresses));
         ret.push_back(obj);
     }
 
     return ret;
 }
 
-Value getnettotals(const Array& params, bool fHelp)
+json_spirit::Value getnettotals(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 0)
-        throw runtime_error(
+        throw std::runtime_error(
             "getnettotals\n"
             "\nReturns information about network traffic, including bytes in, bytes out,\n"
             "and current time.\n"
@@ -327,17 +324,17 @@ Value getnettotals(const Array& params, bool fHelp)
             + HelpExampleRpc("getnettotals", "")
        );
 
-    Object obj;
-    obj.push_back(Pair("totalbytesrecv", CNode::GetTotalBytesRecv()));
-    obj.push_back(Pair("totalbytessent", CNode::GetTotalBytesSent()));
-    obj.push_back(Pair("timemillis", GetTimeMillis()));
+    json_spirit::Object obj;
+    obj.push_back(json_spirit::Pair("totalbytesrecv", CNode::GetTotalBytesRecv()));
+    obj.push_back(json_spirit::Pair("totalbytessent", CNode::GetTotalBytesSent()));
+    obj.push_back(json_spirit::Pair("timemillis", GetTimeMillis()));
     return obj;
 }
 
-Value getnetworkinfo(const Array& params, bool fHelp)
+json_spirit::Value getnetworkinfo(const json_spirit::Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
-        throw runtime_error(
+        throw std::runtime_error(
             "getnetworkinfo\n"
             "Returns an object containing various state info regarding P2P networking.\n"
             "\nResult:\n"
@@ -362,25 +359,25 @@ Value getnetworkinfo(const Array& params, bool fHelp)
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
 
-    Object obj;
-    obj.push_back(Pair("version",       (int)CLIENT_VERSION));
-    obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
-    obj.push_back(Pair("timeoffset",    GetTimeOffset()));
-    obj.push_back(Pair("connections",   (int)vNodes.size()));
-    obj.push_back(Pair("proxy",         (proxy.first.IsValid() ? proxy.first.ToStringIPPort() : string())));
-    obj.push_back(Pair("relayfee",      ValueFromAmount(CTransaction::nMinRelayTxFee)));
-    Array localAddresses;
+    json_spirit::Object obj;
+    obj.push_back(json_spirit::Pair("version",       (int)CLIENT_VERSION));
+    obj.push_back(json_spirit::Pair("protocolversion",(int)PROTOCOL_VERSION));
+    obj.push_back(json_spirit::Pair("timeoffset",    GetTimeOffset()));
+    obj.push_back(json_spirit::Pair("connections",   (int)vNodes.size()));
+    obj.push_back(json_spirit::Pair("proxy",         (proxy.first.IsValid() ? proxy.first.ToStringIPPort() : std::__cxx11::string())));
+    obj.push_back(json_spirit::Pair("relayfee",      ValueFromAmount(CTransaction::nMinRelayTxFee)));
+    json_spirit::Array localAddresses;
     {
         LOCK(cs_mapLocalHost);
         BOOST_FOREACH(const PAIRTYPE(CNetAddr, LocalServiceInfo) &item, mapLocalHost)
         {
-            Object rec;
-            rec.push_back(Pair("address", item.first.ToString()));
-            rec.push_back(Pair("port", item.second.nPort));
-            rec.push_back(Pair("score", item.second.nScore));
+            json_spirit::Object rec;
+            rec.push_back(json_spirit::Pair("address", item.first.ToString()));
+            rec.push_back(json_spirit::Pair("port", item.second.nPort));
+            rec.push_back(json_spirit::Pair("score", item.second.nScore));
             localAddresses.push_back(rec);
         }
     }
-    obj.push_back(Pair("localaddresses", localAddresses));
+    obj.push_back(json_spirit::Pair("localaddresses", localAddresses));
     return obj;
 }
