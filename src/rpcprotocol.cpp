@@ -21,9 +21,6 @@
 #include "json/json_spirit_writer_template.h"
 
 using namespace std;
-using namespace boost;
-using namespace boost::asio;
-using namespace json_spirit;
 
 //
 // HTTP protocol
@@ -217,37 +214,37 @@ int ReadHTTPMessage(std::basic_istream<char>& stream, map<string,
 // http://www.codeproject.com/KB/recipes/JSON_Spirit.aspx
 //
 
-string JSONRPCRequest(const string& strMethod, const Array& params, const Value& id)
+string JSONRPCRequest(const string& strMethod, const json_spirit::Array& params, const json_spirit::Value& id)
 {
-    Object request;
-    request.push_back(Pair("method", strMethod));
-    request.push_back(Pair("params", params));
-    request.push_back(Pair("id", id));
-    return write_string(Value(request), false) + "\n";
+    json_spirit::Object request;
+    request.push_back(json_spirit::Pair("method", strMethod));
+    request.push_back(json_spirit::Pair("params", params));
+    request.push_back(json_spirit::Pair("id", id));
+    return write_string(json_spirit::Value(request), false) + "\n";
 }
 
-Object JSONRPCReplyObj(const Value& result, const Value& error, const Value& id)
+json_spirit::Object JSONRPCReplyObj(const json_spirit::Value& result, const json_spirit::Value& error, const json_spirit::Value& id)
 {
-    Object reply;
-    if (error.type() != null_type)
-        reply.push_back(Pair("result", Value::null));
+    json_spirit::Object reply;
+    if (error.type() != json_spirit::null_type)
+        reply.push_back(json_spirit::Pair("result", json_spirit::Value::null));
     else
-        reply.push_back(Pair("result", result));
-    reply.push_back(Pair("error", error));
-    reply.push_back(Pair("id", id));
+        reply.push_back(json_spirit::Pair("result", result));
+    reply.push_back(json_spirit::Pair("error", error));
+    reply.push_back(json_spirit::Pair("id", id));
     return reply;
 }
 
-string JSONRPCReply(const Value& result, const Value& error, const Value& id)
+string JSONRPCReply(const json_spirit::Value& result, const json_spirit::Value& error, const json_spirit::Value& id)
 {
-    Object reply = JSONRPCReplyObj(result, error, id);
-    return write_string(Value(reply), false) + "\n";
+    json_spirit::Object reply = JSONRPCReplyObj(result, error, id);
+    return write_string(json_spirit::Value(reply), false) + "\n";
 }
 
-Object JSONRPCError(int code, const string& message)
+json_spirit::Object JSONRPCError(int code, const string& message)
 {
-    Object error;
-    error.push_back(Pair("code", code));
-    error.push_back(Pair("message", message));
+    json_spirit::Object error;
+    error.push_back(json_spirit::Pair("code", code));
+    error.push_back(json_spirit::Pair("message", message));
     return error;
 }
