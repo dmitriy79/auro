@@ -1,5 +1,5 @@
 // Copyright (c) 2012 The Bitcoin developers
-// Copyright (c) 2015-2017 The Auroracoin developers
+// Copyright (c) 2015-2018 The Auroracoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef BITCOIN_VERSION_H
@@ -15,8 +15,8 @@
 // client versioning and copyright year
 
 // These need to be macros, as version.cpp's and bitcoin-qt.rc's voodoo requires it
-#define CLIENT_VERSION_MAJOR       2017
-#define CLIENT_VERSION_MINOR       02
+#define CLIENT_VERSION_MAJOR       2018
+#define CLIENT_VERSION_MINOR       09
 #define CLIENT_VERSION_REVISION    1
 #define CLIENT_VERSION_BUILD       0
 
@@ -24,7 +24,7 @@
 #define CLIENT_VERSION_IS_RELEASE  true
 
 // Copyright year (2009-this)
-#define COPYRIGHT_YEAR 2017
+#define COPYRIGHT_YEAR 2018
 
 #endif //HAVE_CONFIG_H
 

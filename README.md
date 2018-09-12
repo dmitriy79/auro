@@ -4,7 +4,7 @@ http://auroracoin.is
 
 Follow [@OfficialAUR](https://twitter.com/OfficialAUR)
 
-Copyright (c) 2014-2016 Auroracoin Developers
+Copyright (c) 2014-2018 Auroracoin Developers
 
 
 ## What is AuroraCoin?
