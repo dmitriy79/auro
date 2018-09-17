@@ -38,7 +38,7 @@ AC_DEFUN([AURORACOIN_FIND_BDB53],[
   done
   if test "x$bdbpath" = "xX"; then
     AC_MSG_RESULT([no])
-    AC_MSG_ERROR(libdb_cxx headers missing)
+    AC_MSG_ERROR(Berkeley DB 5.3 cxx headers missing)
   elif test "x$bdb53path" = "xX"; then
     BITCOIN_SUBDIR_TO_INCLUDE(BDB_CPPFLAGS,[${bdbpath}],db_cxx)
     AC_ARG_WITH([incompatible-bdb],[AS_HELP_STRING([--with-incompatible-bdb], [allow using a bdb version other than 5.3])],[
@@ -60,7 +60,7 @@ AC_DEFUN([AURORACOIN_FIND_BDB53],[
     ])
   done
   if test "x$BDB_LIBS" = "x"; then
-      AC_MSG_ERROR(libdb_cxx missing)
+      AC_MSG_ERROR(Berkeley DB 5.3 cxx headers missing)
   fi
   AC_SUBST(BDB_LIBS)
 ])
