@@ -570,6 +570,10 @@ AC_MSG_RESULT($build_bitcoin_cli)
 dnl sets $bitcoin_enable_qt, $bitcoin_enable_qt_test, $bitcoin_enable_qt_dbus
 BITCOIN_QT_CONFIGURE([$use_pkgconfig], [qt5])
 
+dnl Check for ZeroMQ support
+AX_LIBZMQ([$use_pkgconfig], [4])
+dnl AX_LIBZMQ([xno], [4]) # for testing purposes
+
 AC_LANG_POP
 
 if test "x$use_ccache" != "xno"; then
